@@ -21,4 +21,10 @@ let ``Day2 Part1`` () =
     let diff = if (BigInteger.Subtract(expected , answer) = 0I) then true else false
     Assert.True(diff)
 
+[<Fact>]
+let ``Day2 Part2`` () =
+    let answer = Day2.Part2.solution "Day2.Part1.txt"
+    let expected = 1408487760I
+    let diff = if (BigInteger.Subtract(expected , answer) = 0I) then true else false
+    Assert.True(diff)
 
