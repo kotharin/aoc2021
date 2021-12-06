@@ -28,3 +28,9 @@ let ``Day2 Part2`` () =
     let diff = if (BigInteger.Subtract(expected , answer) = 0I) then true else false
     Assert.True(diff)
 
+[<Fact>]
+let ``Day3 Part1`` () =
+    let answer = Day3.Part1.solution "Day3.txt"
+    let expected = 845186
+    Assert.Equal(expected,answer)
+
