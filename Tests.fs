@@ -34,3 +34,9 @@ let ``Day3 Part1`` () =
     let expected = 845186
     Assert.Equal(expected,answer)
 
+[<Fact>]
+let ``Day3 Part2`` () =
+    let answer = Day3.Part2.solution "Day3.txt"
+    let expected = 4636702
+    Assert.Equal(expected,answer)
+
