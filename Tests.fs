@@ -57,3 +57,18 @@ let ``Day5 Part1`` () =
     let answer = Day5.Part1.solution "Day5.txt"
     let expected = 6007//5
     Assert.Equal(expected,answer)
+
+(*[<Fact>]
+let ``Day5 Traversal Test`` () =
+    let p1 = {Day5.Shared.Point.X = 9; Day5.Shared.Point.Y = 7}
+    let p2 = {Day5.Shared.Point.X = 7; Day5.Shared.Point.Y = 9}
+
+    let answer = Day5.Part2.coveredPoints p1 p2
+    let expected = 3
+    Assert.Equal(expected,(List.length answer))
+*)
+[<Fact>]
+let ``Day5 Part2`` () =
+    let answer = Day5.Part2.solution "Day5.txt"
+    let expected = 19349//12
+    Assert.Equal(expected,answer)
