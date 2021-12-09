@@ -27,25 +27,32 @@ module Part1 =
     open Shared
 
     let solution inputFile =
+
+        let mapOfFishDays =
+            [1..5]
+            |> List.map(fun genDays ->
+                let genList = getNextGeneration 79 [genDays]
+                genDays, List.length genList
+            )|> Map.ofList
+
         let line = File.ReadAllText inputFile
-        let initGeneration =
+        let initGenerationGroups =
             line.Split([|','|])
             |> Array.map (fun s -> int (s.Trim()))
-            //|> Array.toList
-
-        // split the inital population and run
-        let genChunks = Array.chunkBySize 1 initGeneration
-
-        let lastGeneration = 
-            genChunks
-            |> Array.map (fun initGen ->
-                getNextGeneration 79 (initGen |> List.ofArray)
+            |> Array.groupBy id
+            |> Array.map (fun (startDay,finalGens) -> 
+                startDay, Array.length finalGens
             )
-            |> List.concat
 
-        
-        List.length lastGeneration
+        let totalCount =
+            initGenerationGroups
+            |> Array.fold (fun totalCount (startDay,multiplier) ->
+                // Get the count of the final generation for this startDay
+                let finalGenCount = Map.find startDay mapOfFishDays
+                totalCount + bigint(finalGenCount * multiplier)
+            ) 0I
 
+        totalCount
 module Part2 =
     open System.IO
     open Shared
@@ -57,7 +64,6 @@ module Part2 =
             [1..5]
             |> List.map(fun genDays ->
                 let genList = getNextGeneration 255 [genDays]
-                printfn "days:%i" genDays
                 genDays, List.length genList
             )|> Map.ofList
 
