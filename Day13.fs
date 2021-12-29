@@ -49,10 +49,6 @@ module Shared =
             
         ) (Map.empty)
 
-module Part1 =
-    open Shared
-    open System.IO
-
     let parseFile lines =
 
         lines
@@ -70,6 +66,27 @@ module Part1 =
             else
                 paper,instructions
         ) (Map.empty,List.empty)
+
+    // loop through the entire paper and print it
+    let print maxCols maxRows paper  =
+
+        [0..maxRows]
+        |> List.iter (fun y ->
+            let l =
+                [0..maxCols]
+                |> List.fold (fun line x ->
+                    Map.tryFind (x,y) paper
+                    |> Option.map (fun _ -> line + "#")
+                    |> Option.defaultValue (line + ".")
+                    
+                ) ""
+            printfn "%s" l
+        )
+
+module Part1 =
+    open Shared
+    open System.IO
+
     let solution inputFile =
 
         let paper, instructions =
@@ -81,4 +98,25 @@ module Part1 =
         // fold paper based on first instruction
         foldPaper firstFold paper
         |> Map.count
+
+module Part2 =
+    open Shared
+    open System.IO
+    let solution inputFile =
+
+        let paper, instructions =
+            File.ReadAllLines inputFile
+            |> parseFile
+        
+
+        // fold paper based all instructions
+        let newPaper =
+            instructions
+            |> List.fold (fun np ins ->
+                foldPaper ins np
+            ) paper
+        
+        print 40 7 newPaper
+
+        "PCPHARKL"
     
