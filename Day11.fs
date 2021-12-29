@@ -1,7 +1,6 @@
 namespace Day11
 
-module Part1 =
-    open System.IO
+module Shared =
 
     let print maxRow maxCol grid =
         [0..maxRow]
@@ -78,8 +77,6 @@ module Part1 =
                     let updatedZ = List.append tail newZ
                     // set the 0 that we just applied, to -1
                     let updatedG = Map.add (r,c) -1 newG
-                    //printfn "applied 0 for %i,%i" r c
-                    //print maxRow maxCol updatedG
                     updatedG, updatedZ
                 apply newZeroes newGrid
         apply zeroes grid
@@ -95,12 +92,15 @@ module Part1 =
             ng,count
         ) (grid,0)
 
+module Part1 =
+    open Shared
+    open System.IO
+    
     let solution inputFile =
 
         let lines = File.ReadAllLines inputFile
 
         let maxRows = Array.length lines - 1
-
         let maxCols = lines.[0].Length - 1
 
         let grid,_ =
@@ -120,13 +120,50 @@ module Part1 =
             |> Seq.fold (fun (cg,flashCount) i ->
                 // increment values
                 let ng,nz = incrementAllValues cg
-                //printfn "nz:%A" nz
                 // apply the 0's (flashes)
                 let ug, _ = applyZero maxRows maxCols nz ng
                 // count the number of -1 (flashes) and reset to 0
                 let newGrid,fc = countFlashesAndResetZeros ug
-                //printfn "----------------"
-                //print maxRows maxCols ug
                 newGrid,(flashCount + fc)
             ) (grid,0)
         flashCount
+
+module Part2 =
+    open Shared
+    open System.IO
+    
+    let solution inputFile =
+
+        let lines = File.ReadAllLines inputFile
+
+        let maxRows = Array.length lines - 1
+        let maxCols = lines.[0].Length - 1
+
+        let total = (maxRows + 1) * (maxCols + 1)
+
+        let grid,_ =
+            lines
+            |> Array.fold (fun (s1,row) line ->
+                let values = line.ToCharArray()
+                let newMap,_ =
+                    values
+                    |> Array.fold (fun (s2,col) cv ->
+                        Map.add (row,col) (int(cv.ToString())) s2, col + 1
+                    ) (s1,0)
+                newMap,row + 1
+            ) (Map.empty,0)
+
+        let rec stepCount grid steps flashCount =
+
+            if (flashCount = total) then
+                steps
+            else
+                // increment values
+                let ng,nz = incrementAllValues grid
+                // apply the 0's (flashes)
+                let ug, _ = applyZero maxRows maxCols nz ng
+                // count the number of -1 (flashes) and reset to 0
+                let newGrid,fc = countFlashesAndResetZeros ug
+                stepCount newGrid (steps + 1) fc
+
+        stepCount grid 0 0
