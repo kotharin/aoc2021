@@ -1,7 +1,6 @@
 namespace Day15
 
 module Shared =
-    open System
 
     // Get valid adjacent locations
     let getAdjacentLocations maxX maxY x y =
@@ -26,34 +25,6 @@ module Shared =
         AdjacentNodes: (int*int) array
     } 
     with
-        (*
-        static member compare (n1:Node) (n2:Node) =
-            //printfn "n1:%A" n1
-            //printfn "n2:%A" n2
-            let c = 
-                if ((n1.X = n2.X) && (n1.Y = n2.Y)) then
-                    0
-                else
-                    n1.Cost - n2.Cost
-
-            //printfn "c:%i" c
-            c
-
-        override x.Equals(yobj) =  
-            match yobj with 
-            | :? Node as y -> 
-                (x.X = y.X) && (x.Y = y.Y) && (x.Risk = y.Risk)
-            | _ -> false
-
-        override x.GetHashCode() =
-            (x.X * 1000) + x.Y
-
-        interface System.IComparable with
-            member x.CompareTo yobj = 
-                match yobj with 
-                  | :? Node as y -> Node.compare x y
-                  | _ -> invalidArg "yobj" "cannot compare value of different types" 
-        *)
         static member parse maxX maxY curX curY (risk:string) =
             let an = getAdjacentLocations maxX maxY curX curY
             {
@@ -65,23 +36,16 @@ module Shared =
                 Node.AdjacentNodes = an
             }
 
-    let heuristicCost (n1:Node) (n2:Node) =
-        (n2.X - n1.X) + (n2.Y - n1.Y)
-
 module Part1 =
     open Shared
     open System.IO
 
-    let rec iterate destinationNode (openNodes:List<Node>) closed (nodesMap:Map<(int*int),Node>)  =
+    let rec cheapestPath destinationNode (openNodes:List<Node>) closed (nodesMap:Map<(int*int),Node>)  =
         // get the current node to work on
         let currentNode = List.minBy (fun n -> n.Cost) openNodes
-        //printfn "cn:%A" currentNode
         let onPQ = List.filter (fun n -> not (n = currentNode)) openNodes
         // add to closed set
         let newClosed = Set.add (currentNode.X,currentNode.Y) closed
-        //printfn "closed:%A" newClosed
-
-        //printfn "nm:%A" nodesMap
 
         if ((currentNode.X = destinationNode.X) && (currentNode.Y = destinationNode.Y)) then
             currentNode.Cost
@@ -93,21 +57,15 @@ module Part1 =
                 neighbors
                 |> Array.fold (fun (newPQ, newNodesMap) (nx,ny) ->
                     let n = Map.find (nx,ny) newNodesMap
-                    //printfn "n:%A" n
                     let newCost = currentNode.Cost + n.Risk
                     if (((not (List.contains n newPQ)) && (not (Set.contains (n.X,n.Y) newClosed))) || (newCost < n.Cost)) then
                         let n2 = {n with Cost = newCost;Priority = newCost}
-                        //printfn "n2 in set:%A" (Set.contains n2 newPQ)
-                        //printfn "adding:%A" n2
                         let newSet = n2::newPQ
-                        //printfn "newSet:%A" newSet
                         newSet,(Map.add (n2.X,n2.Y) n2 newNodesMap)
                     else
                         newPQ,newNodesMap
                 ) (onPQ, nodesMap)
-            //printfn "newPQ:%A" newOpenNodes
-            //System.Console.ReadLine()
-            iterate destinationNode newOpenNodes newClosed newNodesMap
+            cheapestPath destinationNode newOpenNodes newClosed newNodesMap
         
     let solution inputFile =
 
@@ -139,6 +97,6 @@ module Part1 =
 
         let destinationNode = Map.find (maxX,maxY) nodesMap
 
-        let cost = iterate destinationNode openNodes Set.empty updatedNodesMap
+        let cost = cheapestPath destinationNode openNodes Set.empty updatedNodesMap
 
         cost
