@@ -15,12 +15,12 @@ module Part1 =
         SubPackets: List<Packet> option
     } with
         static member empty =
-        {
-            Version = 0
-            Type = Unknown
-            LiteralValue = None
-            SubPackets = None
-        }
+            {
+                Version = 0
+                Type = Unknown
+                LiteralValue = None
+                SubPackets = None
+            }
 
     let parsePacketHeader (packetData:List<string>) =
         // Get the 6 bits and parse the version and type id info

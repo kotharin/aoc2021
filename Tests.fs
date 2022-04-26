@@ -176,3 +176,9 @@ let ``Day15 Part2`` () =
     let answer = Day15.Part2.solution "Day15.txt"
     let expected = 2879//315
     Assert.Equal(expected,answer)
+
+[<Fact>]
+let ``Day17 Part1`` () =
+    let answer = Day17.Part1.solution "Day17.txt"
+    let expected = 7750//45
+    Assert.Equal(expected,answer)
